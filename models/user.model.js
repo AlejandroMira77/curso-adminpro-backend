@@ -29,8 +29,9 @@ const UserSchema = Schema({
 });
 
 // configuracion visual, devolver uid y no _id
+// voy a extraer el password para no mostrarlo
 UserSchema.method('toJSON', function() {
-    const { __v, _id, ...object } = this.toObject();
+    const { __v, _id, password, ...object } = this.toObject();
     object.uid = _id;
     return object;
 });
