@@ -4,8 +4,18 @@ const User = require('../models/user.model');
 const { generateJwt } = require('../helpers/jwt');
 
 const getUsers = async (req, res = response) => {
-    const users = await User.find();
-    res.json({ users });
+    const from = Number(req.query.from) || 0;
+    try {
+        // ejecutar de manera simultanea varias promesas
+        const [ users, total] = await Promise.all([
+            User.find().skip(from).limit(5),
+            User.count()
+        ]);
+        res.json({ users, total });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ msg: 'Error inesperado' });
+    }
 }
 
 const postUsers = async (req, res = response) => {
