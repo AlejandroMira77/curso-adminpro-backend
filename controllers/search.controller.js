@@ -19,4 +19,32 @@ const getSearch = async (req, res = response) => {
     }
 }
 
-module.exports = { getSearch };
+const getCollection = async (req, res = response) => {
+    const table = req.params.table;
+    const search = req.params.search;
+    const regexp = new RegExp(search, 'i');
+    let data = [];
+    try {
+        switch (table) {
+            case 'medicos':
+                data = await Medico.find({ name: regexp });
+            break;
+            case 'hospitales':
+                data = await Hospital.find({ name: regexp });
+            break;
+            case 'usuarios':
+                data = await User.find({ name: regexp });
+            break;
+            default:
+                return res.status(400).json({
+                    msg: 'La tabla tiene que ser usuarios/medicos/hospitales'
+                });
+            }
+        res.json({ resultados: data });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ msg: 'Error inesperado' });
+    }
+}
+
+module.exports = { getSearch, getCollection };
