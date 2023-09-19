@@ -2,7 +2,7 @@
 
 const Router = require('express');
 const expressFileUpload = require('express-fileupload');
-const { fileUpload } = require('../controllers/upload.controller');
+const { fileUpload, getPhoto } = require('../controllers/upload.controller');
 const { validateJWT } = require('../middlewares/validate-jwt');
 
 const router = Router();
@@ -11,5 +11,6 @@ const router = Router();
 router.use(expressFileUpload());
 
 router.put('/:collection/:id', validateJWT, fileUpload);
+router.get('/:collection/:photo', getPhoto);
 
 module.exports = router;

@@ -1,5 +1,8 @@
 const { response } = require('express');
 const { v4: uuidv4 } = require('uuid');
+const path = require('path');
+const fs = require('fs');
+const { updatePhoto } = require('../helpers/update-photo');
 
 const fileUpload = async (req, res = response) => {
     try {
@@ -31,17 +34,17 @@ const fileUpload = async (req, res = response) => {
         const nameFile = `${ uuidv4() }.${ extensionFile }`;
 
         // path para guardar la imagen
-        const path = `./uploads/${ collection }/${ nameFile }`;
+        const pathFile = `./uploads/${ collection }/${ nameFile }`;
 
         // mover la imagen
-        file.mv(path, (err) => {
+        file.mv(pathFile, (err) => {
             if (err) {
                 console.log(err);
                 return res.status(500).json({ msg: 'error al mover la imagen' });
             }
 
             // actualizar base de datos
-            
+            updatePhoto(collection, id, nameFile);
 
             res.json({ msg: 'File uploaded!', nameFile });
         });
@@ -51,4 +54,18 @@ const fileUpload = async (req, res = response) => {
     }
 }
 
-module.exports = { fileUpload };
+const getPhoto = async (req, res = response) => {
+    const collection = req.params.collection;
+    const photo = req.params.photo;
+    const pathImg = path.join(__dirname, `../uploads/${ collection }/${ photo }`);
+    
+    // imagen por defecto
+    if (fs.existsSync(pathImg)) {
+        res.sendFile(pathImg);
+    } else {
+        const pathImg = path.join(__dirname, `../uploads/no-img.jpg`);
+        res.sendFile(pathImg);
+    }
+}
+
+module.exports = { fileUpload, getPhoto };

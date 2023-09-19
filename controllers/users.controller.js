@@ -9,7 +9,7 @@ const getUsers = async (req, res = response) => {
         // ejecutar de manera simultanea varias promesas
         const [ users, total] = await Promise.all([
             User.find().skip(from).limit(5),
-            User.count()
+            User.countDocuments()
         ]);
         res.json({ users, total });
     } catch (error) {
