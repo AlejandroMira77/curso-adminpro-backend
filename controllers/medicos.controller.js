@@ -29,11 +29,42 @@ const postMedicos = async (req, res = response) => {
 }
 
 const updateMedicos = async (req, res = response) => {
-    res.json({ msg: 'update' });
+    try {
+        const id = req.params.id;
+        const uid = req.uid;
+        const medico = await Medico.findById(id);
+        if (!medico) {
+            return res.status(404).json({
+                msg: 'Medico no encontrado por id'
+            })
+        }
+        const changeMedico = {
+            ...req.body,
+            user: uid   // ultimo usuario que modifico
+        }
+        const updateMedico = await Medico.findByIdAndUpdate(id, changeMedico, { new: true });
+        res.json({ updateMedico });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ msg: 'Error inesperado' });
+    }
 }
 
 const deleteMedicos = async (req, res = response) => {
-    res.json({ msg: 'delete' });
+    try {
+        const id = req.params.id;
+        const medico = await Medico.findById(id);
+        if (!medico) {
+            return res.status(404).json({
+                msg: 'Medico no encontrado por id'
+            })
+        }
+        await Medico.findByIdAndDelete(id);
+        res.json({ msg: 'Medico eliminado...' });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ msg: 'Error inesperado' });
+    }
 }
 
 module.exports = { getMedicos, postMedicos, updateMedicos, deleteMedicos };
