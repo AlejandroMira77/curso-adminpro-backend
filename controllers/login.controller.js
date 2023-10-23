@@ -62,7 +62,9 @@ const renewToken = async (req, res = response) => {
     const uid = req.uid;
     // Generar token
     const token = await generateJwt(uid);
-    res.json({ token });
+    // Obtener user
+    const userDB = await User.findById(uid);
+    res.json({ token: token, usuario: userDB });
 }
 
 module.exports = { login, googleSignIn, renewToken };
