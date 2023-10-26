@@ -46,11 +46,11 @@ const fileUpload = async (req, res = response) => {
             // actualizar base de datos
             updatePhoto(collection, id, nameFile);
 
-            res.json({ msg: 'File uploaded!', nameFile });
+            res.json({ ok: true, msg: 'File uploaded!', nameFile });
         });
     } catch (error) {
         console.log(error);
-        res.status(500).json({ msg: 'Error inesperado' });
+        res.status(500).json({ ok: false, msg: 'Error inesperado' });
     }
 }
 
