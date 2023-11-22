@@ -67,4 +67,17 @@ const deleteMedicos = async (req, res = response) => {
     }
 }
 
-module.exports = { getMedicos, postMedicos, updateMedicos, deleteMedicos };
+const getMedicoById = async (req, res = response) => {
+    try {
+        const id = req.params.id;
+        const medico = await Medico.findById(id)
+        .populate('user', 'name email img')
+        .populate('hospital', 'name');
+        res.json({ medico });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ msg: 'Error inesperado' });
+    }
+}
+
+module.exports = { getMedicos, postMedicos, updateMedicos, deleteMedicos, getMedicoById };
