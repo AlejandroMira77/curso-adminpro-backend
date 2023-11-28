@@ -1,8 +1,9 @@
 const { response } = require('express');
-const User = require('../models/user.model');
 const bcrypt = require('bcryptjs');
+const User = require('../models/user.model');
 const { generateJwt } = require('../helpers/jwt');
 const { googleVerify } = require('../helpers/google-verify');
+const { getMenuFront } = require('../helpers/menu-front');
 
 const login = async (req, res = response) => {
     const { email, password } = req.body;
@@ -20,7 +21,7 @@ const login = async (req, res = response) => {
         // Generar token
         const token = await generateJwt(userDB.id);
 
-        res.json({ token });
+        res.json({ token, menu: getMenuFront(userDB.role) });
     } catch (error) {
         console.log(error);
         res.status(500).json({ msg: 'Error inesperado' });
@@ -51,7 +52,7 @@ const googleSignIn = async (req, res = response) => {
         // Generar token
         const token = await generateJwt(user.id);
 
-        res.json({ email, name, picture, token });
+        res.json({ email, name, picture, token, menu: getMenuFront(user.role) });
     } catch (error) {
         console.log(error);
         res.status(400).json({ msg: 'Error inesperado' });
@@ -64,7 +65,7 @@ const renewToken = async (req, res = response) => {
     const token = await generateJwt(uid);
     // Obtener user
     const userDB = await User.findById(uid);
-    res.json({ token: token, usuario: userDB });
+    res.json({ token: token, usuario: userDB, menu: getMenuFront(userDB.role) });
 }
 
 module.exports = { login, googleSignIn, renewToken };
